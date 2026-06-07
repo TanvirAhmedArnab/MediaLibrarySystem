@@ -55,7 +55,7 @@ namespace MediaLibrarySystem
 
         public override string GetDisplayInfo()
         {
-            return $"DVD: {Title} ({Year}) directed by {Director} | {RuntimeMinutes} minutes | ID: {MediaId}";
+            return $"DVD: {Title} directed by {Director} ({Year}) - {RuntimeMinutes} minutes";
         }
 
         public override string GetBasicInfo()

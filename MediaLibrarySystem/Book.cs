@@ -55,7 +55,7 @@ namespace MediaLibrarySystem
 
         public override string GetDisplayInfo()
         {
-            return $"Book: {Title} ({Year}) by {Author} | {PageCount} pages | ID: {MediaId}";
+            return $"Book: {Title} by {Author} ({Year}) - {PageCount} pages";
         }
 
         public override string GetBasicInfo()

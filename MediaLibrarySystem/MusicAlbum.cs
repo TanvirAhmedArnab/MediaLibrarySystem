@@ -55,7 +55,7 @@ namespace MediaLibrarySystem
 
         public override string GetDisplayInfo()
         {
-            return $"Music Album: {Title} ({Year}) by {Artist} | {TrackCount} tracks | ID: {MediaId}";
+            return $"Album: {Title} by {Artist} ({Year}) - {TrackCount} tracks";
         }
 
         public override string GetBasicInfo()
