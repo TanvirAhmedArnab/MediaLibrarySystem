@@ -2,7 +2,7 @@
 
 Simple Media Library System is a C# console application built as a capstone project for the Coursera course [Advanced C# Language Features & Object-Oriented Programming](https://www.coursera.org/learn/advanced-c-language-features--object-oriented-programming?specialization=beginners-guide-to-c-sharp-fundamentals).
 
-The project models a local media library that needs to manage different types of media items, including books, DVDs, and music albums. The main goal of this project is to practice object-oriented programming concepts such as inheritance, polymorphism, encapsulation, abstraction, interfaces, validation, exception handling, and method overriding in a clear, maintainable C# application.
+The project models a local media library that needs to manage different types of media items, including books, DVDs, and music albums. The main goal of this project is to practice object-oriented programming concepts such as inheritance, polymorphism, encapsulation, abstraction, interfaces, validation, exception handling, XML documentation, and AI-assisted code review in a clear, maintainable C# application.
 
 ## Course Context
 
@@ -10,7 +10,7 @@ This project is part of the Beginners Guide to C# Fundamentals Professional Cert
 
 ## Project Purpose
 
-The purpose of this application is to build a structured media management system that can grow from a simple class hierarchy into a complete library application. The project begins with a shared abstract base class, expands into derived media types, includes a library collection that can manage different media items through a common base type, introduces interfaces for display and search behavior, and now adds stronger encapsulation with centralized validation and a manager layer.
+The purpose of this application is to build a structured media management system that can grow from a simple class hierarchy into a complete library application. The project begins with a shared abstract base class, expands into derived media types, includes a library collection that can manage different media items through a common base type, introduces interfaces for display and search behavior, adds stronger encapsulation with centralized validation and a manager layer, and now includes comprehensive XML documentation and AI-assisted code quality improvements.
 
 This project also demonstrates how version control can track the evolution of object-oriented class design step by step.
 
@@ -46,6 +46,7 @@ This project also demonstrates how version control can track the evolution of ob
 * Custom estimated value logic for music albums based on track count
 * Custom category information for each media type
 * Custom searchable terms for books, DVDs, and music albums
+* Token-based multi-word search matching
 * `MediaLibrary` class for managing a collection of media items
 * `MediaLibraryManager` class for simplified user-facing operations
 * `AddItem()` method that accepts any `MediaItem` derived object
@@ -56,6 +57,9 @@ This project also demonstrates how version control can track the evolution of ob
 * `GetDisplaySummary()` method using the `IDisplayable` interface
 * `GetDetailedReport()` method that shows basic info, category, estimated value, and total library value
 * Friendly error messages for invalid media creation attempts
+* Comprehensive XML documentation comments for public classes, methods, properties, and interfaces
+* XML documentation file generation enabled in the project file
+* Main program architecture comment block documenting OOP design and AI assistance
 * Demonstration of multiple media types processed uniformly through a shared library collection
 * Demonstration of interface-based abstraction through display and search contracts
 * Demonstration of a manager layer hiding collection and validation complexity from the main program
@@ -164,9 +168,10 @@ The current console application demonstrates the media library by:
 5. Displaying a short summary through the `IDisplayable` interface.
 6. Searching for media items by exact title.
 7. Searching for media items by flexible searchable terms such as author, director, artist, and media type.
-8. Handling missing search results safely.
-9. Generating a detailed report with category information and estimated values.
-10. Calculating the total estimated value of the library collection.
+8. Testing multi-word token-based searches such as `hobbit tolkien` and `dark side pink`.
+9. Handling missing search results safely.
+10. Generating a detailed report with category information and estimated values.
+11. Calculating the total estimated value of the library collection.
 
 ## Validation Rules
 
@@ -208,70 +213,9 @@ The project includes two levels of search behavior.
 * DVDs can be searched by title, year, media ID, director, or media type.
 * Music albums can be searched by title, year, media ID, artist, or media type.
 
-This makes search behavior more flexible without requiring the `MediaLibrary` class to know the details of every media type.
+The search behavior now supports multi-word token matching. Each word in the search query must match at least one searchable term for an item to be returned.
 
-## Value Estimation Logic
+For example:
 
-The base `MediaItem` class provides a default estimated value based on item age. The value decreases over time but does not fall below a minimum base value.
-
-Each derived class customizes the calculation:
-
-* `Book` adds a capped adjustment based on page count.
-* `Dvd` adds a capped adjustment based on runtime.
-* `MusicAlbum` adds a capped adjustment based on track count.
-
-These adjustments keep the calculation simple enough for the current project stage while still demonstrating meaningful method overriding.
-
-## Technology Used
-
-* C#
-* .NET Console Application
-* Visual Studio Community
-* Git
-* GitHub Desktop
-* GitHub
-
-## Testing Summary
-
-The current version was manually tested by creating multiple valid instances of each derived media type:
-
-* Multiple `Book` objects
-* Multiple `Dvd` objects
-* Multiple `MusicAlbum` objects
-
-The sample objects are added through the `MediaLibraryManager`, which hides the underlying collection and object creation details from the main program.
-
-Invalid creation attempts were also tested:
-
-* Empty title
-* Future year
-* Invalid track count
-
-These invalid inputs are rejected by validation logic and converted into friendly error messages by the manager layer.
-
-The `DisplayAllItems()` behavior was tested to confirm that each object displays its own specialized output through overridden `GetDisplayInfo()` methods.
-
-The `GetDisplaySummary()` method was tested to confirm that media items can be displayed through the `IDisplayable` interface.
-
-The `FindByTitle()` method was tested with:
-
-* Exact title matches
-* Different letter casing
-* Missing title searches
-
-The `SearchItems()` method was tested with:
-
-* Book author searches
-* DVD director searches
-* Music album artist searches
-* Media type searches
-* Missing search terms
-* Empty search input
-
-This confirms that interface-based search works across all media types and that invalid or missing search results are handled safely.
-
-The `GetDetailedReport()` method was tested to confirm that each item displays basic information, category information, estimated value, and contributes to the total estimated library value.
-
-## Debugging Summary
-
-Breakpoints can be placed inside the property setters for `Title`, `Year`, `Author`, `PageCount`, `Director`, `RuntimeMinutes`, `Artist`, and `TrackCount`
+* `tolkien` can match `The Hobbit` because Tolkien is the author.
+* `hobbit tolkien` can match `The Hobbit` because one token

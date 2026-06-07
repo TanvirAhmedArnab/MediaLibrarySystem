@@ -4,15 +4,30 @@ using System.Text;
 
 namespace MediaLibrarySystem
 {
+    /// <summary>
+    /// Stores and manages a collection of media items.
+    /// </summary>
+    /// <remarks>
+    /// This class hides the internal <see cref="List{T}"/> implementation and exposes
+    /// controlled operations for adding, retrieving, searching, summarizing, and reporting
+    /// media items.
+    /// </remarks>
     public sealed class MediaLibrary
     {
         private readonly List<MediaItem> _mediaItems;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MediaLibrary"/> class.
+        /// </summary>
         public MediaLibrary()
         {
             _mediaItems = new List<MediaItem>();
         }
 
+        /// <summary>
+        /// Gets the number of media items currently stored in the library.
+        /// </summary>
+        /// <value>The total number of stored media items.</value>
         public int Count
         {
             get
@@ -21,6 +36,11 @@ namespace MediaLibrarySystem
             }
         }
 
+        /// <summary>
+        /// Adds a media item to the library.
+        /// </summary>
+        /// <param name="item">The media item to add.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="item"/> is <c>null</c>.</exception>
         public void AddItem(MediaItem item)
         {
             if (item is null)
@@ -31,11 +51,25 @@ namespace MediaLibrarySystem
             _mediaItems.Add(item);
         }
 
+        /// <summary>
+        /// Gets a copy of all media items in the library.
+        /// </summary>
+        /// <returns>A new list containing the current media items.</returns>
+        /// <remarks>
+        /// Returning a copy protects the internal collection from direct external modification.
+        /// </remarks>
         public List<MediaItem> GetAllItems()
         {
             return new List<MediaItem>(_mediaItems);
         }
 
+        /// <summary>
+        /// Displays all media items directly to the console.
+        /// </summary>
+        /// <remarks>
+        /// This method demonstrates polymorphic display behavior through the
+        /// <see cref="IDisplayable"/> interface.
+        /// </remarks>
         public void DisplayAllItems()
         {
             if (_mediaItems.Count == 0)
@@ -51,6 +85,12 @@ namespace MediaLibrarySystem
             }
         }
 
+        /// <summary>
+        /// Finds the first media item with a matching title.
+        /// </summary>
+        /// <param name="title">The title to search for.</param>
+        /// <returns>The first matching media item, or <c>null</c> when no match is found.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="title"/> is empty or whitespace.</exception>
         public MediaItem? FindByTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -71,6 +111,20 @@ namespace MediaLibrarySystem
             return null;
         }
 
+        /// <summary>
+        /// Searches the media library using interface-based searchable terms.
+        /// </summary>
+        /// <param name="term">The search text entered by the user.</param>
+        /// <returns>A list of media items that match the search term.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="term"/> is empty or whitespace.</exception>
+        /// <remarks>
+        /// The search supports multi-word queries. Each query token must match at least one
+        /// searchable term exposed by a media item.
+        /// </remarks>
+        /// <example>
+        /// Searching for <c>tolkien hobbit</c> can match a book when one token matches
+        /// the title and another token matches the author.
+        /// </example>
         public List<MediaItem> SearchItems(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
@@ -93,6 +147,10 @@ namespace MediaLibrarySystem
             return matchingItems;
         }
 
+        /// <summary>
+        /// Gets a compact display summary of all media items.
+        /// </summary>
+        /// <returns>A formatted multi-line summary string.</returns>
         public string GetDisplaySummary()
         {
             if (_mediaItems.Count == 0)
@@ -114,6 +172,10 @@ namespace MediaLibrarySystem
             return summaryBuilder.ToString().TrimEnd();
         }
 
+        /// <summary>
+        /// Gets a detailed report for all media items, including category information and estimated values.
+        /// </summary>
+        /// <returns>A formatted multi-line detailed report string.</returns>
         public string GetDetailedReport()
         {
             if (_mediaItems.Count == 0)
@@ -143,6 +205,9 @@ namespace MediaLibrarySystem
             return reportBuilder.ToString().TrimEnd();
         }
 
+        /// <summary>
+        /// Displays the detailed media report directly to the console.
+        /// </summary>
         public void DisplayDetailedReport()
         {
             Console.WriteLine(GetDetailedReport());
