@@ -37,6 +37,18 @@ namespace MediaLibrarySystem
         }
 
         /// <summary>
+        /// Gets the number of successfully stored media items.
+        /// </summary>
+        /// <value>The current number of valid media items in the managed library.</value>
+        public int ItemCount
+        {
+            get
+            {
+                return _library.Count;
+            }
+        }
+
+        /// <summary>
         /// Creates and adds a book to the managed media library.
         /// </summary>
         /// <param name="title">The book title.</param>
