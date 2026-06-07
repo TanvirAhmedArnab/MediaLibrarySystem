@@ -81,6 +81,19 @@ namespace MediaLibrarySystem
             return $"{MediaId} | {Title} ({Year})";
         }
 
+        public virtual double GetEstimatedValue()
+        {
+            int age = DateTime.Now.Year - Year;
+            double estimatedValue = Math.Max(5.0, 25.0 - age * 2.0);
+
+            return Math.Round(estimatedValue, 2);
+        }
+
+        public virtual string GetCategoryInfo()
+        {
+            return "General Media Item";
+        }
+
         private static string GenerateMediaId()
         {
             string mediaId = $"MEDIA-{s_nextMediaNumber:0000}";

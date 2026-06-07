@@ -55,5 +55,32 @@ namespace MediaLibrarySystem
 
             return null;
         }
+
+        public void DisplayDetailedReport()
+        {
+            if (_mediaItems.Count == 0)
+            {
+                Console.WriteLine("The media library is currently empty.");
+                return;
+            }
+
+            double totalEstimatedValue = 0.0;
+
+            Console.WriteLine("Detailed Library Report");
+            Console.WriteLine("-----------------------");
+
+            foreach (MediaItem item in _mediaItems)
+            {
+                double estimatedValue = item.GetEstimatedValue();
+                totalEstimatedValue += estimatedValue;
+
+                Console.WriteLine(item.GetBasicInfo());
+                Console.WriteLine($"Category: {item.GetCategoryInfo()}");
+                Console.WriteLine($"Estimated Value: ${estimatedValue:F2}");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine($"Total Estimated Library Value: ${totalEstimatedValue:F2}");
+        }
     }
 }

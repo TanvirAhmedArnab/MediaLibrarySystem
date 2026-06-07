@@ -6,6 +6,24 @@ namespace MediaLibrarySystem
     {
         private static void Main(string[] args)
         {
+            try
+            {
+                RunApplication();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The application encountered an unexpected error.");
+                Console.WriteLine($"Error: {exception.Message}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to close the application.");
+            Console.ReadLine();
+        }
+
+        private static void RunApplication()
+        {
             Console.WriteLine("Welcome to the Media Library Management System!");
             Console.WriteLine("=============================================");
             Console.WriteLine();
@@ -29,12 +47,13 @@ namespace MediaLibrarySystem
             SearchAndDisplay(library, "Unknown Title");
 
             Console.WriteLine();
-            Console.WriteLine("Polymorphic collection test completed successfully.");
+            library.DisplayDetailedReport();
+
+            Console.WriteLine();
+            Console.WriteLine("Advanced polymorphic method test completed successfully.");
             Console.WriteLine();
 
             Console.WriteLine("Thank you for using the Media Library System!");
-            Console.WriteLine("Press Enter to close the application.");
-            Console.ReadLine();
         }
 
         private static void SearchAndDisplay(MediaLibrary library, string title)

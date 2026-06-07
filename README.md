@@ -25,16 +25,24 @@ This project also demonstrates how version control can track the evolution of ob
 * Auto-generated `MediaId` property
 * Abstract `GetDisplayInfo()` method
 * Virtual `GetBasicInfo()` method
+* Virtual `GetEstimatedValue()` method with base depreciation logic
+* Virtual `GetCategoryInfo()` method with default category behavior
 * `Book` derived class with author and page count validation
 * `Dvd` derived class with director and runtime validation
 * `MusicAlbum` derived class with artist and track count validation
 * Constructor chaining from derived classes to the `MediaItem` base class
 * Method overriding in all derived media classes
+* Custom estimated value logic for books based on page count
+* Custom estimated value logic for DVDs based on runtime
+* Custom estimated value logic for music albums based on track count
+* Custom category information for each media type
 * `MediaLibrary` class for managing a collection of media items
 * `AddItem()` method that accepts any `MediaItem` derived object
 * `DisplayAllItems()` method that displays all items through polymorphic method calls
 * `FindByTitle()` method with case-insensitive title search
+* `DisplayDetailedReport()` method that shows basic info, category, estimated value, and total library value
 * Demonstration of multiple media types processed uniformly through a shared library collection
+* Basic top-level exception handling in the console application
 * Git repository setup with `.gitignore` and `.gitattributes`
 
 ## Object-Oriented Programming Concepts Used
@@ -69,7 +77,7 @@ The project includes three derived classes:
 * `Dvd`
 * `MusicAlbum`
 
-Each class inherits from the abstract `MediaItem` base class and reuses its shared title, year, media ID, and basic display behavior.
+Each class inherits from the abstract `MediaItem` base class and reuses its shared title, year, media ID, basic display behavior, estimated value behavior, and category behavior.
 
 The derived constructors use constructor chaining to call the base `MediaItem` constructor before initializing their own specific fields.
 
@@ -77,9 +85,16 @@ The derived constructors use constructor chaining to call the base `MediaItem` c
 
 The application stores `Book`, `Dvd`, and `MusicAlbum` objects inside a shared `MediaLibrary` collection that uses the base type `MediaItem`.
 
-This allows the program to treat different media types uniformly while still calling each class's overridden display methods.
+This allows the program to treat different media types uniformly while still calling each class's overridden methods.
 
-For example, `DisplayAllItems()` loops through the media collection and calls `GetDisplayInfo()` on each item. At runtime, C# automatically calls the correct overridden method from `Book`, `Dvd`, or `MusicAlbum`.
+Polymorphism is demonstrated through multiple methods:
+
+* `GetDisplayInfo()`
+* `GetBasicInfo()`
+* `GetEstimatedValue()`
+* `GetCategoryInfo()`
+
+For example, `DisplayDetailedReport()` loops through the media collection and calls these methods through `MediaItem` references. At runtime, C# automatically calls the correct implementation from `Book`, `Dvd`, or `MusicAlbum`.
 
 This demonstrates runtime polymorphism because the same method call behaves differently depending on the actual object type.
 
@@ -101,6 +116,20 @@ The current console application demonstrates the media library by:
 3. Displaying all media items through polymorphic method calls.
 4. Searching for media items by title.
 5. Handling missing search results safely.
+6. Generating a detailed report with category information and estimated values.
+7. Calculating the total estimated value of the library collection.
+
+## Value Estimation Logic
+
+The base `MediaItem` class provides a default estimated value based on item age. The value decreases over time but does not fall below a minimum base value.
+
+Each derived class customizes the calculation:
+
+* `Book` adds a capped adjustment based on page count.
+* `Dvd` adds a capped adjustment based on runtime.
+* `MusicAlbum` adds a capped adjustment based on track count.
+
+These adjustments keep the calculation simple enough for the current project stage while still demonstrating meaningful method overriding.
 
 ## Technology Used
 
@@ -131,11 +160,13 @@ The `FindByTitle()` method was tested with:
 
 This confirms that case-insensitive search works across all media types and that no-match results are handled safely.
 
+The `DisplayDetailedReport()` method was tested to confirm that each item displays basic information, category information, estimated value, and contributes to the total estimated library value.
+
 ## Debugging Summary
 
-Breakpoints can be placed inside the `GetDisplayInfo()` methods of `Book`, `Dvd`, and `MusicAlbum`.
+Breakpoints can be placed inside the `GetDisplayInfo()`, `GetEstimatedValue()`, and `GetCategoryInfo()` methods of `Book`, `Dvd`, and `MusicAlbum`.
 
-When `DisplayAllItems()` calls `GetDisplayInfo()` through a `MediaItem` reference, the debugger shows that the runtime chooses the correct overridden method based on the actual object type.
+When `DisplayAllItems()` or `DisplayDetailedReport()` calls these methods through a `MediaItem` reference, the debugger shows that the runtime chooses the correct overridden method based on the actual object type.
 
 This demonstrates runtime polymorphic method resolution.
 
@@ -145,17 +176,21 @@ When a derived object is created, the base class constructor runs first. After t
 
 ## AI Assistance Disclosure
 
-AI assistance was used during development to review object-oriented design, class naming, constructor chaining, validation logic, polymorphic collection design, search behavior, and README structure.
+AI assistance was used during development to review object-oriented design, class naming, constructor chaining, validation logic, polymorphic collection design, search behavior, estimated value calculations, and README structure.
+
+For the estimated value feature, AI assistance suggested making the calculations more controlled by using capped adjustments and rounding values to two decimal places. This suggestion was accepted because it keeps the output readable and prevents very large page counts, runtimes, or track counts from creating unrealistic estimated values.
+
+More complex suggestions, such as using real-world market pricing, condition ratings, popularity scores, or external price data, were not included because they would add unnecessary complexity for the current course stage.
 
 All AI-assisted suggestions were reviewed before implementation. Only suggestions that were understandable, relevant to the course requirements, and appropriate for the current project stage were included.
 
 ## Development Reflection
 
-This stage of the project focuses on moving from individual derived classes to a polymorphic collection. The important design improvement is the addition of the `MediaLibrary` class, which manages different media types through a single collection of `MediaItem` references.
+This stage of the project focuses on deeper polymorphism. The previous stage demonstrated polymorphism through display methods. This stage expands the design by adding virtual methods to the base class and overriding them in each derived class.
 
-This makes the object-oriented design more practical. Instead of handling books, DVDs, and music albums separately, the application can process them uniformly through the base class while still preserving their specialized behavior.
+The important design improvement is that the `MediaLibrary` class does not need separate logic for books, DVDs, and music albums. It can call shared methods through the `MediaItem` base type, and the runtime selects the correct behavior automatically.
 
-The `FindByTitle()` method also begins to move the project toward a real media management system by introducing search behavior across all media types.
+The estimated value feature also shows why virtual methods are useful. The base class provides a default value calculation, while each derived class adds a media-specific adjustment.
 
 ## Planned Features
 
@@ -173,16 +208,17 @@ The `FindByTitle()` method also begins to move the project toward a real media m
 
 ## Version Control Approach
 
-This project uses Git to track the evolution of the class design step by step. Each commit should represent one meaningful improvement, such as setting up the project, creating the base class, adding derived classes, implementing polymorphic collections, adding search behavior, or improving documentation.
+This project uses Git to track the evolution of the class design step by step. Each commit should represent one meaningful improvement, such as setting up the project, creating the base class, adding derived classes, implementing polymorphic collections, adding advanced virtual methods, adding search behavior, or improving documentation.
 
 Current major milestones:
 
 1. Initial project setup with `MediaItem` base class
 2. Implementation of `Book`, `Dvd`, and `MusicAlbum` inheritance hierarchy
 3. Implementation of polymorphic media collection and title search
+4. Implementation of advanced polymorphic methods and AI-assisted value calculation improvements
 
 ## Repository Status
 
-This project now includes a polymorphic media collection through the `MediaLibrary` class. The application can store books, DVDs, and music albums in one collection, display each item using overridden methods, and search across all media types by title.
+This project now includes advanced polymorphic behavior through multiple overridden methods. The application can store books, DVDs, and music albums in one collection, display each item using overridden methods, search across all media types by title, generate category-specific information, calculate estimated item values, and display total estimated library value.
 
 The next stage will focus on adding interactive user input and menu-driven library management.

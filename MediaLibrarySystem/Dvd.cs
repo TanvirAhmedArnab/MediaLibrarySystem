@@ -4,6 +4,9 @@ namespace MediaLibrarySystem
 {
     public sealed class Dvd : MediaItem
     {
+        private const double ValuePerRuntimeMinute = 0.05;
+        private const double MaximumRuntimeValueAdjustment = 10.0;
+
         private string _director = string.Empty;
         private int _runtimeMinutes;
 
@@ -61,6 +64,21 @@ namespace MediaLibrarySystem
         public override string GetBasicInfo()
         {
             return $"{base.GetBasicInfo()} | DVD directed by {Director}";
+        }
+
+        public override double GetEstimatedValue()
+        {
+            double baseValue = base.GetEstimatedValue();
+            double runtimeAdjustment = Math.Min(MaximumRuntimeValueAdjustment, RuntimeMinutes * ValuePerRuntimeMinute);
+
+            return Math.Round(baseValue + runtimeAdjustment, 2);
+        }
+
+        public override string GetCategoryInfo()
+        {
+            string runtimeCategory = RuntimeMinutes >= 120 ? "Feature-Length DVD" : "Short DVD";
+
+            return $"DVD | {runtimeCategory} | Director: {Director}";
         }
     }
 }
