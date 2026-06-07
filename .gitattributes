@@ -1,0 +1,88 @@
+###############################################################################
+# Global normalization
+###############################################################################
+# Normalize all text files to LF in the repo, convert to native on checkout.
+* text=auto
+
+###############################################################################
+# Core .NET / C# source files
+###############################################################################
+*.cs        text diff=csharp
+*.csproj    text
+*.sln       text eol=crlf
+*.props     text
+*.targets   text
+
+###############################################################################
+# Common text-based project assets
+###############################################################################
+*.json      text
+*.xml       text
+*.config    text
+*.editorconfig text
+*.ruleset   text
+*.runsettings text
+*.yml       text
+*.yaml      text
+*.md        text
+*.txt       text
+*.csv       text
+*.tsv       text
+
+###############################################################################
+# Web assets (text)
+###############################################################################
+*.html      text
+*.htm       text
+*.css       text
+*.js        text
+*.ts        text
+*.scss      text
+*.less      text
+
+###############################################################################
+# Binary assets (never diff)
+###############################################################################
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.bmp       binary
+*.tiff      binary
+*.pdf       binary
+*.zip       binary
+*.7z        binary
+*.dll       binary
+*.exe       binary
+*.pdb       binary
+
+###############################################################################
+# Fonts (binary)
+###############################################################################
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+
+###############################################################################
+# Prevent Git from attempting to diff archives or NuGet packages
+###############################################################################
+*.nupkg     binary
+*.snupkg    binary
+
+###############################################################################
+# Unity / GameDev (optional but safe defaults)
+###############################################################################
+*.unity     text
+*.meta      text
+*.asset     text
+*.prefab    text
+*.mat       text
+
+###############################################################################
+# Ignore diff for generated files
+###############################################################################
+*.designer.cs  text
+*.g.cs         text
+*.generated.cs text
