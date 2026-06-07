@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarySystem
 {
@@ -61,6 +62,11 @@ namespace MediaLibrarySystem
             return $"DVD: {Title} directed by {Director} ({Year}) - {RuntimeMinutes} minutes";
         }
 
+        public override string GetShortDescription()
+        {
+            return $"DVD: {Title} directed by {Director}";
+        }
+
         public override string GetBasicInfo()
         {
             return $"{base.GetBasicInfo()} | DVD directed by {Director}";
@@ -79,6 +85,20 @@ namespace MediaLibrarySystem
             string runtimeCategory = RuntimeMinutes >= 120 ? "Feature-Length DVD" : "Short DVD";
 
             return $"DVD | {runtimeCategory} | Director: {Director}";
+        }
+
+        public override bool MatchesSearch(string searchTerm)
+        {
+            return ContainsSearchTerm(GetSearchableTerms(), searchTerm);
+        }
+
+        public override List<string> GetSearchableTerms()
+        {
+            List<string> searchableTerms = base.GetSearchableTerms();
+            searchableTerms.Add(Director);
+            searchableTerms.Add("DVD");
+
+            return searchableTerms;
         }
     }
 }

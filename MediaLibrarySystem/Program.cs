@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarySystem
 {
@@ -42,31 +43,60 @@ namespace MediaLibrarySystem
             library.DisplayAllItems();
 
             Console.WriteLine();
-            SearchAndDisplay(library, "inception");
-            SearchAndDisplay(library, "The Hobbit");
-            SearchAndDisplay(library, "Unknown Title");
+            Console.WriteLine(library.GetDisplaySummary());
+
+            Console.WriteLine();
+            SearchAndDisplaySingleResult(library, "inception");
+            SearchAndDisplaySingleResult(library, "The Hobbit");
+            SearchAndDisplaySingleResult(library, "Unknown Title");
+
+            Console.WriteLine();
+            DisplaySearchResults(library, "tolkien");
+            DisplaySearchResults(library, "nolan");
+            DisplaySearchResults(library, "pink floyd");
+            DisplaySearchResults(library, "album");
+            DisplaySearchResults(library, "missing search term");
 
             Console.WriteLine();
             library.DisplayDetailedReport();
 
             Console.WriteLine();
-            Console.WriteLine("Advanced polymorphic method test completed successfully.");
+            Console.WriteLine("Interface-based abstraction test completed successfully.");
             Console.WriteLine();
 
             Console.WriteLine("Thank you for using the Media Library System!");
         }
 
-        private static void SearchAndDisplay(MediaLibrary library, string title)
+        private static void SearchAndDisplaySingleResult(MediaLibrary library, string title)
         {
             MediaItem? foundItem = library.FindByTitle(title);
 
             if (foundItem is null)
             {
-                Console.WriteLine($"Search result for \"{title}\": No matching media item found.");
+                Console.WriteLine($"Title search result for \"{title}\": No matching media item found.");
                 return;
             }
 
-            Console.WriteLine($"Search result for \"{title}\": {foundItem.GetDisplayInfo()}");
+            Console.WriteLine($"Title search result for \"{title}\": {foundItem.GetDisplayInfo()}");
+        }
+
+        private static void DisplaySearchResults(MediaLibrary library, string searchTerm)
+        {
+            List<MediaItem> matchingItems = library.SearchItems(searchTerm);
+
+            Console.WriteLine($"Interface search results for \"{searchTerm}\":");
+
+            if (matchingItems.Count == 0)
+            {
+                Console.WriteLine("- No matching media items found.");
+                return;
+            }
+
+            foreach (MediaItem item in matchingItems)
+            {
+                IDisplayable displayableItem = item;
+                Console.WriteLine($"- {displayableItem.GetShortDescription()}");
+            }
         }
     }
 }

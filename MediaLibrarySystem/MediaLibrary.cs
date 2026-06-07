@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MediaLibrarySystem
 {
@@ -32,7 +33,8 @@ namespace MediaLibrarySystem
 
             foreach (MediaItem item in _mediaItems)
             {
-                Console.WriteLine(item.GetDisplayInfo());
+                IDisplayable displayableItem = item;
+                Console.WriteLine(displayableItem.GetDisplayInfo());
             }
         }
 
@@ -54,6 +56,49 @@ namespace MediaLibrarySystem
             }
 
             return null;
+        }
+
+        public List<MediaItem> SearchItems(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                throw new ArgumentException("Search term cannot be empty.", nameof(term));
+            }
+
+            List<MediaItem> matchingItems = new List<MediaItem>();
+
+            foreach (MediaItem item in _mediaItems)
+            {
+                ISearchable searchableItem = item;
+
+                if (searchableItem.MatchesSearch(term))
+                {
+                    matchingItems.Add(item);
+                }
+            }
+
+            return matchingItems;
+        }
+
+        public string GetDisplaySummary()
+        {
+            if (_mediaItems.Count == 0)
+            {
+                return "The media library is currently empty.";
+            }
+
+            StringBuilder summaryBuilder = new StringBuilder();
+
+            summaryBuilder.AppendLine("Media Library Summary");
+            summaryBuilder.AppendLine("---------------------");
+
+            foreach (MediaItem item in _mediaItems)
+            {
+                IDisplayable displayableItem = item;
+                summaryBuilder.AppendLine($"- {displayableItem.GetShortDescription()}");
+            }
+
+            return summaryBuilder.ToString().TrimEnd();
         }
 
         public void DisplayDetailedReport()

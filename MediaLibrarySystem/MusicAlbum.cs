@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarySystem
 {
@@ -61,6 +62,11 @@ namespace MediaLibrarySystem
             return $"Album: {Title} by {Artist} ({Year}) - {TrackCount} tracks";
         }
 
+        public override string GetShortDescription()
+        {
+            return $"Album: {Title} by {Artist}";
+        }
+
         public override string GetBasicInfo()
         {
             return $"{base.GetBasicInfo()} | Album by {Artist}";
@@ -79,6 +85,21 @@ namespace MediaLibrarySystem
             string albumCategory = TrackCount >= 10 ? "Full-Length Album" : "Short Album";
 
             return $"Music Album | {albumCategory} | Artist: {Artist}";
+        }
+
+        public override bool MatchesSearch(string searchTerm)
+        {
+            return ContainsSearchTerm(GetSearchableTerms(), searchTerm);
+        }
+
+        public override List<string> GetSearchableTerms()
+        {
+            List<string> searchableTerms = base.GetSearchableTerms();
+            searchableTerms.Add(Artist);
+            searchableTerms.Add("Music Album");
+            searchableTerms.Add("Album");
+
+            return searchableTerms;
         }
     }
 }

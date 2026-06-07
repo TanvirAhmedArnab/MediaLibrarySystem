@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarySystem
 {
@@ -61,6 +62,11 @@ namespace MediaLibrarySystem
             return $"Book: {Title} by {Author} ({Year}) - {PageCount} pages";
         }
 
+        public override string GetShortDescription()
+        {
+            return $"Book: {Title} by {Author}";
+        }
+
         public override string GetBasicInfo()
         {
             return $"{base.GetBasicInfo()} | Book by {Author}";
@@ -79,6 +85,20 @@ namespace MediaLibrarySystem
             string lengthCategory = PageCount >= 400 ? "Long Book" : "Standard Book";
 
             return $"Book | {lengthCategory} | Author: {Author}";
+        }
+
+        public override bool MatchesSearch(string searchTerm)
+        {
+            return ContainsSearchTerm(GetSearchableTerms(), searchTerm);
+        }
+
+        public override List<string> GetSearchableTerms()
+        {
+            List<string> searchableTerms = base.GetSearchableTerms();
+            searchableTerms.Add(Author);
+            searchableTerms.Add("Book");
+
+            return searchableTerms;
         }
     }
 }

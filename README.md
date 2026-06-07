@@ -2,7 +2,7 @@
 
 Simple Media Library System is a C# console application built as a capstone project for the Coursera course [Advanced C# Language Features & Object-Oriented Programming](https://www.coursera.org/learn/advanced-c-language-features--object-oriented-programming?specialization=beginners-guide-to-c-sharp-fundamentals).
 
-The project models a local media library that needs to manage different types of media items, including books, DVDs, and music albums. The main goal of this project is to practice object-oriented programming concepts such as inheritance, polymorphism, encapsulation, and abstraction in a clear, maintainable C# application.
+The project models a local media library that needs to manage different types of media items, including books, DVDs, and music albums. The main goal of this project is to practice object-oriented programming concepts such as inheritance, polymorphism, encapsulation, abstraction, interfaces, and method overriding in a clear, maintainable C# application.
 
 ## Course Context
 
@@ -10,7 +10,7 @@ This project is part of the Beginners Guide to C# Fundamentals Professional Cert
 
 ## Project Purpose
 
-The purpose of this application is to build a structured media management system that can grow from a simple class hierarchy into a complete library application. The project begins with a shared abstract base class, expands into derived media types, and now includes a library collection that can manage different media items through a common base type.
+The purpose of this application is to build a structured media management system that can grow from a simple class hierarchy into a complete library application. The project begins with a shared abstract base class, expands into derived media types, includes a library collection that can manage different media items through a common base type, and now introduces interfaces for display and search behavior.
 
 This project also demonstrates how version control can track the evolution of object-oriented class design step by step.
 
@@ -23,10 +23,15 @@ This project also demonstrates how version control can track the evolution of ob
 * Validated `Title` property
 * Validated `Year` property
 * Auto-generated `MediaId` property
+* `IDisplayable` interface for display behavior
+* `ISearchable` interface for search behavior
 * Abstract `GetDisplayInfo()` method
+* Abstract `GetShortDescription()` method
 * Virtual `GetBasicInfo()` method
 * Virtual `GetEstimatedValue()` method with base depreciation logic
 * Virtual `GetCategoryInfo()` method with default category behavior
+* Virtual `MatchesSearch()` method for searchable media behavior
+* Virtual `GetSearchableTerms()` method for search term exposure
 * `Book` derived class with author and page count validation
 * `Dvd` derived class with director and runtime validation
 * `MusicAlbum` derived class with artist and track count validation
@@ -36,12 +41,16 @@ This project also demonstrates how version control can track the evolution of ob
 * Custom estimated value logic for DVDs based on runtime
 * Custom estimated value logic for music albums based on track count
 * Custom category information for each media type
+* Custom searchable terms for books, DVDs, and music albums
 * `MediaLibrary` class for managing a collection of media items
 * `AddItem()` method that accepts any `MediaItem` derived object
-* `DisplayAllItems()` method that displays all items through polymorphic method calls
+* `DisplayAllItems()` method that displays all items through interface-based polymorphic calls
 * `FindByTitle()` method with case-insensitive title search
+* `SearchItems()` method with flexible interface-based search
+* `GetDisplaySummary()` method using the `IDisplayable` interface
 * `DisplayDetailedReport()` method that shows basic info, category, estimated value, and total library value
 * Demonstration of multiple media types processed uniformly through a shared library collection
+* Demonstration of interface-based abstraction through display and search contracts
 * Basic top-level exception handling in the console application
 * Git repository setup with `.gitignore` and `.gitattributes`
 
@@ -57,7 +66,7 @@ The derived classes also apply encapsulation:
 * `Dvd` validates director name and runtime.
 * `MusicAlbum` validates artist name and track count.
 
-The `MediaLibrary` class also encapsulates the internal media collection by keeping its `List<MediaItem>` private. Items are added and searched through public methods instead of exposing the list directly.
+The `MediaLibrary` class also encapsulates the internal media collection by keeping its `List<MediaItem>` private. Items are added, displayed, and searched through public methods instead of exposing the list directly.
 
 This keeps each object responsible for protecting its own valid state and prevents outside code from modifying internal data without control.
 
@@ -65,9 +74,12 @@ This keeps each object responsible for protecting its own valid state and preven
 
 `MediaItem` is an abstract class. It cannot be instantiated directly. Instead, it defines the common structure that all specific media item types must follow.
 
-The abstract `GetDisplayInfo()` method forces every derived media class to provide its own detailed display behavior.
+The project also uses interfaces for abstraction:
 
-The application can work with media items through the abstract `MediaItem` type without needing to know the exact concrete type at every call site.
+* `IDisplayable` defines a contract for objects that can provide display information.
+* `ISearchable` defines a contract for objects that can participate in search operations.
+
+These interfaces allow the application to work with behavior contracts instead of depending only on concrete media classes.
 
 ### Inheritance
 
@@ -77,7 +89,7 @@ The project includes three derived classes:
 * `Dvd`
 * `MusicAlbum`
 
-Each class inherits from the abstract `MediaItem` base class and reuses its shared title, year, media ID, basic display behavior, estimated value behavior, and category behavior.
+Each class inherits from the abstract `MediaItem` base class and reuses its shared title, year, media ID, basic display behavior, estimated value behavior, category behavior, and searchable behavior.
 
 The derived constructors use constructor chaining to call the base `MediaItem` constructor before initializing their own specific fields.
 
@@ -90,21 +102,47 @@ This allows the program to treat different media types uniformly while still cal
 Polymorphism is demonstrated through multiple methods:
 
 * `GetDisplayInfo()`
+* `GetShortDescription()`
 * `GetBasicInfo()`
 * `GetEstimatedValue()`
 * `GetCategoryInfo()`
+* `MatchesSearch()`
+* `GetSearchableTerms()`
 
 For example, `DisplayDetailedReport()` loops through the media collection and calls these methods through `MediaItem` references. At runtime, C# automatically calls the correct implementation from `Book`, `Dvd`, or `MusicAlbum`.
 
 This demonstrates runtime polymorphism because the same method call behaves differently depending on the actual object type.
 
-## Inheritance Hierarchy
+### Interfaces
+
+The `IDisplayable` interface defines display-related behavior:
+
+* `GetDisplayInfo()`
+* `GetShortDescription()`
+
+The `ISearchable` interface defines search-related behavior:
+
+* `MatchesSearch()`
+* `GetSearchableTerms()`
+
+`MediaItem` implements both interfaces, and all derived media classes inherit those contracts. Each derived class customizes the behavior by overriding methods and adding type-specific searchable terms.
+
+This demonstrates how interfaces create consistent behavior contracts across different object types.
+
+## Inheritance and Interface Structure
 
 ```text
-MediaItem
-├── Book
-├── Dvd
-└── MusicAlbum
+IDisplayable
+├── MediaItem
+│   ├── Book
+│   ├── Dvd
+│   └── MusicAlbum
+
+ISearchable
+├── MediaItem
+│   ├── Book
+│   ├── Dvd
+│   └── MusicAlbum
 ```
 
 ## Main Application Flow
@@ -114,10 +152,26 @@ The current console application demonstrates the media library by:
 1. Creating a `MediaLibrary` instance.
 2. Adding several books, DVDs, and music albums.
 3. Displaying all media items through polymorphic method calls.
-4. Searching for media items by title.
-5. Handling missing search results safely.
-6. Generating a detailed report with category information and estimated values.
-7. Calculating the total estimated value of the library collection.
+4. Displaying a short summary through the `IDisplayable` interface.
+5. Searching for media items by exact title.
+6. Searching for media items by flexible searchable terms such as author, director, artist, and media type.
+7. Handling missing search results safely.
+8. Generating a detailed report with category information and estimated values.
+9. Calculating the total estimated value of the library collection.
+
+## Search Behavior
+
+The project now includes two levels of search behavior.
+
+`FindByTitle()` performs a direct title search and returns the first matching media item.
+
+`SearchItems()` performs flexible interface-based searching through the `ISearchable` contract. This allows different media types to expose different searchable terms:
+
+* Books can be searched by title, year, media ID, author, or media type.
+* DVDs can be searched by title, year, media ID, director, or media type.
+* Music albums can be searched by title, year, media ID, artist, or media type.
+
+This makes search behavior more flexible without requiring the `MediaLibrary` class to know the details of every media type.
 
 ## Value Estimation Logic
 
@@ -152,23 +206,33 @@ The sample objects are added to a single `MediaLibrary` instance. This confirms 
 
 The `DisplayAllItems()` method was tested to confirm that each object displays its own specialized output through overridden `GetDisplayInfo()` methods.
 
+The `GetDisplaySummary()` method was tested to confirm that media items can be displayed through the `IDisplayable` interface.
+
 The `FindByTitle()` method was tested with:
 
 * Exact title matches
 * Different letter casing
 * Missing title searches
 
-This confirms that case-insensitive search works across all media types and that no-match results are handled safely.
+The `SearchItems()` method was tested with:
+
+* Book author searches
+* DVD director searches
+* Music album artist searches
+* Media type searches
+* Missing search terms
+
+This confirms that interface-based search works across all media types and that no-match results are handled safely.
 
 The `DisplayDetailedReport()` method was tested to confirm that each item displays basic information, category information, estimated value, and contributes to the total estimated library value.
 
 ## Debugging Summary
 
-Breakpoints can be placed inside the `GetDisplayInfo()`, `GetEstimatedValue()`, and `GetCategoryInfo()` methods of `Book`, `Dvd`, and `MusicAlbum`.
+Breakpoints can be placed inside the `GetDisplayInfo()`, `GetShortDescription()`, `MatchesSearch()`, `GetSearchableTerms()`, `GetEstimatedValue()`, and `GetCategoryInfo()` methods of `Book`, `Dvd`, and `MusicAlbum`.
 
-When `DisplayAllItems()` or `DisplayDetailedReport()` calls these methods through a `MediaItem` reference, the debugger shows that the runtime chooses the correct overridden method based on the actual object type.
+When the application calls these methods through `MediaItem`, `IDisplayable`, or `ISearchable` references, the debugger shows that the runtime chooses the correct implementation based on the actual object type.
 
-This demonstrates runtime polymorphic method resolution.
+This demonstrates runtime polymorphic method resolution and interface-based abstraction.
 
 Breakpoints can also be placed in the `MediaItem`, `Book`, `Dvd`, and `MusicAlbum` constructors to observe constructor chaining.
 
@@ -176,21 +240,19 @@ When a derived object is created, the base class constructor runs first. After t
 
 ## AI Assistance Disclosure
 
-AI assistance was used during development to review object-oriented design, class naming, constructor chaining, validation logic, polymorphic collection design, search behavior, estimated value calculations, and README structure.
+AI assistance was used during development to review object-oriented design, class naming, constructor chaining, validation logic, polymorphic collection design, search behavior, interface design, estimated value calculations, and README structure.
 
-For the estimated value feature, AI assistance suggested making the calculations more controlled by using capped adjustments and rounding values to two decimal places. This suggestion was accepted because it keeps the output readable and prevents very large page counts, runtimes, or track counts from creating unrealistic estimated values.
-
-More complex suggestions, such as using real-world market pricing, condition ratings, popularity scores, or external price data, were not included because they would add unnecessary complexity for the current course stage.
+For the interface implementation stage, AI assistance helped compare whether search behavior should be implemented directly in `MediaLibrary` or exposed through an `ISearchable` contract. The interface-based approach was selected because it keeps media-specific search terms inside the media classes instead of hard-coding book, DVD, and music album details into the library class.
 
 All AI-assisted suggestions were reviewed before implementation. Only suggestions that were understandable, relevant to the course requirements, and appropriate for the current project stage were included.
 
 ## Development Reflection
 
-This stage of the project focuses on deeper polymorphism. The previous stage demonstrated polymorphism through display methods. This stage expands the design by adding virtual methods to the base class and overriding them in each derived class.
+This stage of the project focuses on abstraction through interfaces. Earlier stages used inheritance and virtual methods to share and customize behavior. This stage adds interface contracts so the application can depend on behavior rather than concrete class details.
 
-The important design improvement is that the `MediaLibrary` class does not need separate logic for books, DVDs, and music albums. It can call shared methods through the `MediaItem` base type, and the runtime selects the correct behavior automatically.
+The important design improvement is that `MediaLibrary` can now search and display items through interfaces. It does not need to know whether an item is a book, DVD, or music album to ask whether it matches a search term or to request a short description.
 
-The estimated value feature also shows why virtual methods are useful. The base class provides a default value calculation, while each derived class adds a media-specific adjustment.
+This keeps the system easier to extend. If a new media type is added later, it can participate in display and search behavior by following the same contracts.
 
 ## Planned Features
 
@@ -199,7 +261,7 @@ The estimated value feature also shows why virtual methods are useful. The base 
 * Add new DVD records from user input
 * Add new music album records from user input
 * Display all media items through user-selected menu options
-* Search media items by title through user input
+* Search media items by title or flexible search terms through user input
 * Add borrowing and returning behavior
 * Display available and borrowed media items
 * Improve validation and input handling
@@ -208,7 +270,7 @@ The estimated value feature also shows why virtual methods are useful. The base 
 
 ## Version Control Approach
 
-This project uses Git to track the evolution of the class design step by step. Each commit should represent one meaningful improvement, such as setting up the project, creating the base class, adding derived classes, implementing polymorphic collections, adding advanced virtual methods, adding search behavior, or improving documentation.
+This project uses Git to track the evolution of the class design step by step. Each commit should represent one meaningful improvement, such as setting up the project, creating the base class, adding derived classes, implementing polymorphic collections, adding advanced virtual methods, implementing interfaces, improving search behavior, or improving documentation.
 
 Current major milestones:
 
@@ -216,9 +278,10 @@ Current major milestones:
 2. Implementation of `Book`, `Dvd`, and `MusicAlbum` inheritance hierarchy
 3. Implementation of polymorphic media collection and title search
 4. Implementation of advanced polymorphic methods and AI-assisted value calculation improvements
+5. Implementation of `IDisplayable` and `ISearchable` interfaces
 
 ## Repository Status
 
-This project now includes advanced polymorphic behavior through multiple overridden methods. The application can store books, DVDs, and music albums in one collection, display each item using overridden methods, search across all media types by title, generate category-specific information, calculate estimated item values, and display total estimated library value.
+This project now includes interface-based abstraction through `IDisplayable` and `ISearchable`. The application can store books, DVDs, and music albums in one collection, display each item using overridden methods, search across all media types by title or flexible searchable terms, generate category-specific information, calculate estimated item values, and display total estimated library value.
 
 The next stage will focus on adding interactive user input and menu-driven library management.

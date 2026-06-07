@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarySystem
 {
-    public abstract class MediaItem
+    public abstract class MediaItem : IDisplayable, ISearchable
     {
         private static int s_nextMediaNumber = 1;
 
@@ -76,6 +77,8 @@ namespace MediaLibrarySystem
 
         public abstract string GetDisplayInfo();
 
+        public abstract string GetShortDescription();
+
         public virtual string GetBasicInfo()
         {
             return $"{MediaId} | {Title} ({Year})";
@@ -92,6 +95,41 @@ namespace MediaLibrarySystem
         public virtual string GetCategoryInfo()
         {
             return "General Media Item";
+        }
+
+        public virtual bool MatchesSearch(string searchTerm)
+        {
+            return ContainsSearchTerm(GetSearchableTerms(), searchTerm);
+        }
+
+        public virtual List<string> GetSearchableTerms()
+        {
+            return new List<string>
+            {
+                Title,
+                Year.ToString(),
+                MediaId
+            };
+        }
+
+        protected static bool ContainsSearchTerm(IEnumerable<string> searchableTerms, string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return false;
+            }
+
+            string normalizedSearchTerm = searchTerm.Trim();
+
+            foreach (string term in searchableTerms)
+            {
+                if (term.Contains(normalizedSearchTerm, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string GenerateMediaId()
