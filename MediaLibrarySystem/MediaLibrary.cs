@@ -13,6 +13,14 @@ namespace MediaLibrarySystem
             _mediaItems = new List<MediaItem>();
         }
 
+        public int Count
+        {
+            get
+            {
+                return _mediaItems.Count;
+            }
+        }
+
         public void AddItem(MediaItem item)
         {
             if (item is null)
@@ -21,6 +29,11 @@ namespace MediaLibrarySystem
             }
 
             _mediaItems.Add(item);
+        }
+
+        public List<MediaItem> GetAllItems()
+        {
+            return new List<MediaItem>(_mediaItems);
         }
 
         public void DisplayAllItems()
@@ -101,31 +114,38 @@ namespace MediaLibrarySystem
             return summaryBuilder.ToString().TrimEnd();
         }
 
-        public void DisplayDetailedReport()
+        public string GetDetailedReport()
         {
             if (_mediaItems.Count == 0)
             {
-                Console.WriteLine("The media library is currently empty.");
-                return;
+                return "The media library is currently empty.";
             }
 
             double totalEstimatedValue = 0.0;
+            StringBuilder reportBuilder = new StringBuilder();
 
-            Console.WriteLine("Detailed Library Report");
-            Console.WriteLine("-----------------------");
+            reportBuilder.AppendLine("Detailed Library Report");
+            reportBuilder.AppendLine("-----------------------");
 
             foreach (MediaItem item in _mediaItems)
             {
                 double estimatedValue = item.GetEstimatedValue();
                 totalEstimatedValue += estimatedValue;
 
-                Console.WriteLine(item.GetBasicInfo());
-                Console.WriteLine($"Category: {item.GetCategoryInfo()}");
-                Console.WriteLine($"Estimated Value: ${estimatedValue:F2}");
-                Console.WriteLine();
+                reportBuilder.AppendLine(item.GetBasicInfo());
+                reportBuilder.AppendLine($"Category: {item.GetCategoryInfo()}");
+                reportBuilder.AppendLine($"Estimated Value: ${estimatedValue:F2}");
+                reportBuilder.AppendLine();
             }
 
-            Console.WriteLine($"Total Estimated Library Value: ${totalEstimatedValue:F2}");
+            reportBuilder.AppendLine($"Total Estimated Library Value: ${totalEstimatedValue:F2}");
+
+            return reportBuilder.ToString().TrimEnd();
+        }
+
+        public void DisplayDetailedReport()
+        {
+            Console.WriteLine(GetDetailedReport());
         }
     }
 }

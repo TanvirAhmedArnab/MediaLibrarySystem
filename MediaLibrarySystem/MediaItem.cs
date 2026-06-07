@@ -5,17 +5,36 @@ namespace MediaLibrarySystem
 {
     public abstract class MediaItem : IDisplayable, ISearchable
     {
-        private static int s_nextMediaNumber = 1;
+        private const int MinimumYear = 1800;
+        private const int MaximumTitleLength = 100;
 
+        private static int s_nextId = 1;
+
+        private readonly int _mediaId;
         private string _title = string.Empty;
         private int _year;
-        private string _mediaId = string.Empty;
 
         protected MediaItem(string title, int year)
         {
-            MediaId = GenerateMediaId();
+            _mediaId = GenerateMediaId();
             Title = title;
             Year = year;
+        }
+
+        public int MediaId
+        {
+            get
+            {
+                return _mediaId;
+            }
+        }
+
+        public string MediaCode
+        {
+            get
+            {
+                return $"MEDIA-{MediaId:0000}";
+            }
         }
 
         public string Title
@@ -27,11 +46,7 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Title cannot be empty.", nameof(value));
-                }
-
+                ValidateTitle(value);
                 _title = value.Trim();
             }
         }
@@ -45,33 +60,8 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (value < 1800 || value > 2024)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        "Year must be between 1800 and 2024.");
-                }
-
+                ValidateYear(value);
                 _year = value;
-            }
-        }
-
-        public string MediaId
-        {
-            get
-            {
-                return _mediaId;
-            }
-
-            private set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Media ID cannot be empty.", nameof(value));
-                }
-
-                _mediaId = value;
             }
         }
 
@@ -81,7 +71,7 @@ namespace MediaLibrarySystem
 
         public virtual string GetBasicInfo()
         {
-            return $"{MediaId} | {Title} ({Year})";
+            return $"{MediaCode} | {Title} ({Year})";
         }
 
         public virtual double GetEstimatedValue()
@@ -108,8 +98,78 @@ namespace MediaLibrarySystem
             {
                 Title,
                 Year.ToString(),
-                MediaId
+                MediaId.ToString(),
+                MediaCode
             };
+        }
+
+        protected static void ValidateTitle(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                throw new ArgumentException("Title cannot be empty or whitespace.", nameof(title));
+            }
+
+            if (title.Trim().Length > MaximumTitleLength)
+            {
+                throw new ArgumentException(
+                    $"Title cannot exceed {MaximumTitleLength} characters.",
+                    nameof(title));
+            }
+        }
+
+        protected static void ValidateYear(int year)
+        {
+            int currentYear = DateTime.Now.Year;
+
+            if (year < MinimumYear || year > currentYear)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(year),
+                    year,
+                    $"Year must be between {MinimumYear} and {currentYear}.");
+            }
+        }
+
+        protected static string ValidateRequiredText(
+            string value,
+            string parameterName,
+            string displayName,
+            int maximumLength)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(
+                    $"{displayName} cannot be empty or whitespace.",
+                    parameterName);
+            }
+
+            string trimmedValue = value.Trim();
+
+            if (trimmedValue.Length > maximumLength)
+            {
+                throw new ArgumentException(
+                    $"{displayName} cannot exceed {maximumLength} characters.",
+                    parameterName);
+            }
+
+            return trimmedValue;
+        }
+
+        protected static void ValidateNumberRange(
+            int value,
+            string parameterName,
+            string displayName,
+            int minimumValue,
+            int maximumValue)
+        {
+            if (value < minimumValue || value > maximumValue)
+            {
+                throw new ArgumentOutOfRangeException(
+                    parameterName,
+                    value,
+                    $"{displayName} must be between {minimumValue} and {maximumValue}.");
+            }
         }
 
         protected static bool ContainsSearchTerm(IEnumerable<string> searchableTerms, string searchTerm)
@@ -132,10 +192,10 @@ namespace MediaLibrarySystem
             return false;
         }
 
-        private static string GenerateMediaId()
+        private static int GenerateMediaId()
         {
-            string mediaId = $"MEDIA-{s_nextMediaNumber:0000}";
-            s_nextMediaNumber++;
+            int mediaId = s_nextId;
+            s_nextId++;
 
             return mediaId;
         }

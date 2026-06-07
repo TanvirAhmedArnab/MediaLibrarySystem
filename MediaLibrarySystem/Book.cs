@@ -5,6 +5,9 @@ namespace MediaLibrarySystem
 {
     public sealed class Book : MediaItem
     {
+        private const int MaximumAuthorLength = 80;
+        private const int MinimumPageCount = 1;
+        private const int MaximumPageCount = 10000;
         private const double ValuePerPage = 0.03;
         private const double MaximumPageValueAdjustment = 15.0;
 
@@ -27,12 +30,11 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Author cannot be empty.", nameof(value));
-                }
-
-                _author = value.Trim();
+                _author = ValidateRequiredText(
+                    value,
+                    nameof(value),
+                    "Author",
+                    MaximumAuthorLength);
             }
         }
 
@@ -45,13 +47,12 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        "Page count must be greater than zero.");
-                }
+                ValidateNumberRange(
+                    value,
+                    nameof(value),
+                    "Page count",
+                    MinimumPageCount,
+                    MaximumPageCount);
 
                 _pageCount = value;
             }

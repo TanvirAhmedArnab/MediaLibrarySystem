@@ -5,6 +5,9 @@ namespace MediaLibrarySystem
 {
     public sealed class Dvd : MediaItem
     {
+        private const int MaximumDirectorLength = 80;
+        private const int MinimumRuntimeMinutes = 1;
+        private const int MaximumRuntimeMinutes = 1000;
         private const double ValuePerRuntimeMinute = 0.05;
         private const double MaximumRuntimeValueAdjustment = 10.0;
 
@@ -27,12 +30,11 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Director cannot be empty.", nameof(value));
-                }
-
-                _director = value.Trim();
+                _director = ValidateRequiredText(
+                    value,
+                    nameof(value),
+                    "Director",
+                    MaximumDirectorLength);
             }
         }
 
@@ -45,13 +47,12 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        "Runtime must be greater than zero minutes.");
-                }
+                ValidateNumberRange(
+                    value,
+                    nameof(value),
+                    "Runtime",
+                    MinimumRuntimeMinutes,
+                    MaximumRuntimeMinutes);
 
                 _runtimeMinutes = value;
             }

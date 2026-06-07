@@ -5,6 +5,9 @@ namespace MediaLibrarySystem
 {
     public sealed class MusicAlbum : MediaItem
     {
+        private const int MaximumArtistLength = 80;
+        private const int MinimumTrackCount = 1;
+        private const int MaximumTrackCount = 500;
         private const double ValuePerTrack = 0.75;
         private const double MaximumTrackValueAdjustment = 12.0;
 
@@ -27,12 +30,11 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Artist cannot be empty.", nameof(value));
-                }
-
-                _artist = value.Trim();
+                _artist = ValidateRequiredText(
+                    value,
+                    nameof(value),
+                    "Artist",
+                    MaximumArtistLength);
             }
         }
 
@@ -45,13 +47,12 @@ namespace MediaLibrarySystem
 
             set
             {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        "Track count must be greater than zero.");
-                }
+                ValidateNumberRange(
+                    value,
+                    nameof(value),
+                    "Track count",
+                    MinimumTrackCount,
+                    MaximumTrackCount);
 
                 _trackCount = value;
             }
